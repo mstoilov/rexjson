@@ -1,4 +1,4 @@
-SUBDIRS += testdom/build/linux
+SUBDIRS += dom/build/linux
 SUBDIRS += parser/build/linux
  	
 all:

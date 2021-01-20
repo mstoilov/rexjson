@@ -4,7 +4,7 @@ ROOT_DIR = ../../../..
 SRC_DIR = ../..
 INCLUDE += -I$(SRC_DIR)
 INCLUDE += -I$(ROOT_DIR) 
-TARGET = testdom
+TARGET = dom
 LIBS += -lrexjson -static
 LIBDIRS = -L$(ROOT_DIR)/rexjson/build/linux/bin
 
