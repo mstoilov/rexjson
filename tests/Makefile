@@ -1,4 +1,5 @@
 SUBDIRS += testdom/build/linux
+SUBDIRS += parser/build/linux
  	
 all:
 	@for dir in $(SUBDIRS); do \

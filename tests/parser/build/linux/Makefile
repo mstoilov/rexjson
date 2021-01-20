@@ -1,10 +1,10 @@
 
-ROOT_DIR = ../..
 OUTDIR = bin
-SRCDIR = .
-INCLUDE += -I$(SRCDIR)
+ROOT_DIR = ../../../..
+SRC_DIR = ../..
+INCLUDE += -I$(SRC_DIR)
 INCLUDE += -I$(ROOT_DIR) 
-TARGET = testdom
+TARGET = parser
 LIBS += -lrexjson -static
 LIBDIRS = -L$(ROOT_DIR)/rexjson/build/linux/bin
 
@@ -30,14 +30,14 @@ all: $(OUTDIR)/$(TARGET)
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
-OBJECTS += $(addprefix $(OUTDIR)/, $(patsubst %.cpp,%.o,$(notdir $(wildcard ./*.cpp))))
-vpath %.cpp ./
+OBJECTS += $(addprefix $(OUTDIR)/, $(patsubst %.cpp,%.o,$(notdir $(wildcard $(SRC_DIR)/*.cpp))))
+vpath %.cpp $(SRC_DIR)/
 
-$(OUTDIR)/%.o: $(SRCDIR)/%.c | $(OUTDIR)
-	$(CC) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRCDIR)/$*.c
+$(OUTDIR)/%.o: $(SRC_DIR)/%.c | $(OUTDIR)
+	$(CC) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.c
 
-$(OUTDIR)/%.o: $(SRCDIR)/%.cpp | $(OUTDIR)
-	$(CPP) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRCDIR)/$*.cpp
+$(OUTDIR)/%.o: $(SRC_DIR)/%.cpp | $(OUTDIR)
+	$(CPP) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.cpp
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) 
 	$(CPP) -o $@ $^ $(LIBS) $(LIBDIRS)
@@ -47,3 +47,5 @@ $(OUTDIR):
 
 clean:
 	-rm -fR $(OUTDIR)/$(TARGET) $(OUTDIR)/*.o $(OUTDIR)/*.lst $(OUTDIR)/*.d
+	-rm -d $(OUTDIR)
+		

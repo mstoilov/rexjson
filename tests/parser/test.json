@@ -1,0 +1,40 @@
+{
+        "prop1" : "Value \"one\"",
+        "prop2" : "Value две two две",
+        "prop3" : [
+                "Value 3",
+                "Value 4",
+                true,
+                false,
+                44,
+                {
+                        "prop1" : 2.33320000,
+                        "prop2" : null,
+                        "prop3" : {
+                                "prop1" : {
+                                },
+                                "prop2" : null
+                        }
+                },
+                [
+                        1,
+                        2,
+                        3
+                ],
+                23.33000000,
+                [
+                ]
+        ],
+        "prop4" : true,
+        "prop5" : 3.34500000,
+        "prop7" : [
+                1,
+                2,
+                true,
+                false,
+                0.25000000,
+                {
+                        "prop1" : true
+                }
+        ]
+}
