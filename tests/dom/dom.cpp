@@ -18,6 +18,7 @@ int main(int argc, const char *argv[])
 	rexjson::output(false).write(rexjson::read(text5), std::cout);
 	std::cout << std::endl << std::endl;
 
+	rexjson::value val(43);
 	rexjson::value v = rexjson::object();
 	v["prop1"] = "Value \\\"one\\\"";
 	v["prop2"] = "Value \u0434\u0432\u0435 two \u0434\u0432\u0435";

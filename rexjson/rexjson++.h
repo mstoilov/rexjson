@@ -28,7 +28,7 @@ class array : public std::vector<value>
 {
 public:
 	using base = std::vector<value>;
-	using base::base;
+	using base::vector;
 	base::reference operator[](base::size_type n)
 	{
 		if (n >= size())
@@ -55,6 +55,7 @@ public:
 
 	value(); // creates null value
 	value(const value& v);
+	value(value&& v);
 	value(const char* v);
 	value(const std::string& v);
 	value(bool v);
@@ -63,7 +64,6 @@ public:
 	value(long int v);
 	value(unsigned long int v);
 	value(long long int v);
-	value(unsigned long long int v);
 	value(double v);
 	value(const object& v);
 	value(const array& v);
@@ -103,61 +103,21 @@ public:
 	int64_t get_int64() const;
 	double get_real() const;
 	value_type get_type() const;
-	value_type type() const { return get_type(); }
 	std::string get_typename() const;
 	std::string to_string() const;
 	static std::string get_typename(unsigned int type);
 
-	template<typename T>
-	void get(T& ret) const
+	template<typename T> void get(T& ret) const
 	{
 		ret = get_int();
 	}
 
-	template<typename T>
-	T get_value() const
-	{
-		T ret;
-		get<T>(ret);
-		return ret;
+	void set(const object& v) {
+		operator=(v);
 	}
 
-	template <typename T> void get_v(T& val);
-
-	void set_object(const object& v) {
-		operator=(v);
-	}
-	void set_array(const array& v) {
-		operator=(v);
-	}
-	void set_str(const std::string& v) {
-		operator=(v);
-	}
-	void set_str(const char* v) {
-		operator=(v);
-	}
-	void set_bool(bool v) {
-		operator=(v);
-	}
-	void set_int(int v) {
-		operator=(v);
-	}
-	void set_int(int64_t v) {
-		operator=(v);
-	}
-	void set_real(double v) {
-		operator=(v);
-	}
 	value& operator=(const value& v);
-	value& operator=(const object& v);
-	value& operator=(const array& v);
-	value& operator=(const std::string& v);
-	value& operator=(const char* v);
-	value& operator=(bool v);
-	value& operator=(int v);
-	value& operator=(int64_t v);
-	value& operator=(double v);
-
+	value& operator=(value&& v);
 	explicit operator float() { return get_real(); }
 	explicit operator double() { return get_real(); }
 	explicit operator int() { return get_int(); }
@@ -166,7 +126,6 @@ public:
 	explicit operator bool() { return get_bool(); }
 
 	void check_type(value_type vtype) const;
-	void move(value& v);
 
 protected:
 	void destroy();
@@ -180,40 +139,10 @@ protected:
 		void* v_null_;
 		std::string *v_string_;
 		array *v_array_;
-		std::map<std::string, value> *v_object_;
+		object *v_object_;
 	} store_;
 };
 
-
-template<>
-inline void value::get<int64_t>(int64_t& ret) const
-{
-	ret = get_int64();
-}
-
-template<>
-inline void value::get<bool>(bool& ret) const
-{
-	ret = get_bool();
-}
-
-template<>
-inline void value::get<double>(double& ret) const
-{
-	ret = get_real();
-}
-
-template<>
-inline void value::get<float>(float& ret) const
-{
-	ret = get_real();
-}
-
-template<>
-inline void value::get<std::string>(std::string& ret) const
-{
-	ret = get_str();
-}
 
 class input {
 public:
@@ -242,6 +171,14 @@ protected:
 	size_t errline_;
 	size_t errpos_;
 };
+
+
+template<> inline void value::get<int64_t>(int64_t& ret) const 			{ ret = get_int64(); }
+template<> inline void value::get<bool>(bool& ret) const 				{ ret = get_bool(); }
+template<> inline void value::get<double>(double& ret) const 			{ ret = get_real(); }
+template<> inline void value::get<float>(float& ret) const 				{ ret = get_real(); }
+template<> inline void value::get<std::string>(std::string& ret) const 	{ ret = get_str(); }
+
 
 class output {
 public:
