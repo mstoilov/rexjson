@@ -31,14 +31,20 @@ public:
 	using base::vector;
 	base::reference operator[](base::size_type n)
 	{
-		if (n >= size())
-			throw std::range_error("Invalid index");
+		if (n >= size()) {
+			std::stringstream oss;
+			oss << "array::operator[] called with invalid index: " << n << ", size is: " << size();
+			throw std::range_error(oss.str());
+		}
 		return base::operator [](n);
 	}
 	base::const_reference operator[](base::size_type n) const
 	{
-		if (n >= size())
-			throw std::range_error("Invalid index");
+		if (n >= size()) {
+			std::stringstream oss;
+			oss << "array::operator[] called with invalid index: " << n << ", size is: " << size();
+			throw std::range_error(oss.str());
+		}
 		return base::operator [](n);
 	}
 };
@@ -142,6 +148,13 @@ protected:
 		object *v_object_;
 	} store_;
 };
+
+
+inline std::ostream& operator<<(std::ostream& os, const rexjson::value& v)
+{
+	os << v.to_string();
+	return os;
+}
 
 
 class input {

@@ -64,6 +64,13 @@ int main(int argc, const char *argv[])
 			rexjson::value v(o);
 			std::cout << v.write(false, true, 8, 8) << std::endl;
 		}
+		{
+			rexjson::value o;
+			o.read("[1, 2, 3, \"four\", 5]");
+			rexjson::value v(o);
+			std::cout << v.write(false, true, 8, 8) << std::endl;
+			std::cout << v[2] << std::endl;
+		}
 
 
 	} catch (std::exception& e) {
