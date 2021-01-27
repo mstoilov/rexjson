@@ -118,6 +118,7 @@ protected:
 	template<std::size_t... is>
 	std::tuple<Args...> params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
 	{
+
 		return std::make_tuple(Args{params[is].get_value<Args>()}...);
 	}
 
@@ -267,7 +268,7 @@ public:
 		}
 
 		verify_parameters(params, types, ARRAYSIZE(types));
-		if (params[0].type() == rexjson::null_type) {
+		if (params[0].get_type() == rexjson::null_type) {
 			std::string result;
 			for (typename method_map_type::const_iterator it = map_.begin(); it != map_.end(); it++) {
 				result += it->first + "\n";
@@ -421,7 +422,7 @@ public:
 			if (val.get_type() != rexjson::obj_type)
 				throw create_rpc_error(RPC_PARSE_ERROR, "top-level object parse error");
 			rexjson::object::const_iterator params_it = val.get_obj().find("params");
-			if (params_it != val.get_obj().end() && params_it->second.type() != rexjson::array_type)
+			if (params_it != val.get_obj().end() && params_it->second.get_type() != rexjson::array_type)
 				throw create_rpc_error(RPC_INVALID_REQUEST, "params must be an array");
 			if (params_it != val.get_obj().end())
 				params = params_it->second.get_array();

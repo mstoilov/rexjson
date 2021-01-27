@@ -122,6 +122,14 @@ public:
 		operator=(v);
 	}
 
+    template<typename T>
+    T get_value() const
+    {
+        T ret;
+        get<T>(ret);
+        return ret;
+    }
+
 	value& operator=(const value& v);
 	value& operator=(value&& v);
 	explicit operator float() { return get_real(); }

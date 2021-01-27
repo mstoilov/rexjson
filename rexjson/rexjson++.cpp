@@ -510,24 +510,30 @@ void input::get_token()
 	rexuint_t nstate = REX_DFA_STARTSTATE;
 	char ch = 0;
 
+	if (is_.eof()) {
+		token_id_ = -1;
+		return;
+	}
+
 	loctok_.clear();
 	token_.clear();
 	token_id_ = 0;
 	while (is_) {
-		++offset_;
 		ch = is_.get();
-		loctok_ += ch;
-		REX_DFA_NEXT(dfa, nstate, ch, &nstate);
-		if (nstate == REX_DFA_DEADSTATE) {
-			is_.unget();
-			--offset_;
+		if (is_.eof()) {
 			break;
 		}
+		offset_++;
+		loctok_ += ch;
 		if (ch == '\n') {
 			errline_++;
 			errpos_ = 1;
 		} else {
 			errpos_++;
+		}
+		REX_DFA_NEXT(dfa, nstate, ch, &nstate);
+		if (nstate == REX_DFA_DEADSTATE) {
+			break;
 		}
 		if (REX_DFA_STATE(dfa, nstate)->type == REX_STATETYPE_ACCEPT) {
 			/*
@@ -539,6 +545,14 @@ void input::get_token()
 			token_ = loctok_;
 		}
 	}
+
+	std::string pback = loctok_.substr(token_.size());
+	for (std::string::reverse_iterator rit = pback.rbegin(); rit != pback.rend(); rit++) {
+		is_.putback(*rit);
+		offset_--;
+		errpos_--;
+	}
+
 }
 
 void input::read_steam(value& v, size_t maxlevels)
@@ -550,6 +564,8 @@ void input::read_steam(value& v, size_t maxlevels)
 	v.destroy();
 	next_token();
 	parse_value(v);
+	if (token_id_ != -1)
+		error_unexpectedtoken();
 }
 
 void input::next_token()
@@ -562,7 +578,7 @@ void input::next_token()
 void input::error_unexpectedtoken()
 {
 	std::ostringstream os;
-	os << "Unexpected (" << errline_ << ":" << errpos_ + 1 - loctok_.length() << "): " << "'" << loctok_ << "' at offset " << offset_ + 1 - loctok_.length();
+	os << "Unexpected (" << errline_ << ":" << errpos_ + 1 - loctok_.length() << "): " << "'" << loctok_ << "' at offset " << offset_;
 	throw std::runtime_error(os.str());
 }
 
