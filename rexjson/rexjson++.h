@@ -164,10 +164,19 @@ inline std::ostream& operator<<(std::ostream& os, const rexjson::value& v)
 	return os;
 }
 
+struct error : public std::runtime_error {
+	error(size_t __offset, std::string __token)
+			: std::runtime_error(std::string("Error: '" + __token + "' @ offset: " + std::to_string(__offset)))
+			, offset(__offset)
+			, token(__token)	{}
+
+	size_t offset;
+	std::string token;
+};
 
 class input {
 public:
-	input(std::istream& is) : is_(is), token_id_(0), offset_(0), levels_(0), errline_(1), errpos_(1) {}
+	input(std::istream& is) : is_(is), token_id_(0), offset_(0), levels_(0) {}
 	void read_steam(value& v, size_t maxlevels = 32);
 
 protected:
@@ -189,8 +198,6 @@ protected:
 	int token_id_;
 	size_t offset_;
 	size_t levels_;
-	size_t errline_;
-	size_t errpos_;
 };
 
 
