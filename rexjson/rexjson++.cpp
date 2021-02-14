@@ -209,6 +209,12 @@ value::value(long long int v)
     store_.v_int_ = v;
 }
 
+value::value(unsigned long long int v)
+{
+    value_type_ = int_type;
+    store_.v_int_ = v;
+}
+
 value::value(double v)
 {
     value_type_ = real_type;

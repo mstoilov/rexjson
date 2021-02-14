@@ -70,6 +70,7 @@ public:
     value(long int v);
     value(unsigned long int v);
     value(long long int v);
+    value(unsigned long long int v);
     value(double v);
     value(const object& v);
     value(const array& v);
