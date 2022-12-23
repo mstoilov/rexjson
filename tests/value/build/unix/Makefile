@@ -46,6 +46,6 @@ $(OUTDIR):
 	@mkdir $@
 
 clean:
-	-rm -fR $(OUTDIR)/$(TARGET) $(OUTDIR)/*.o $(OUTDIR)/*.lst $(OUTDIR)/*.d
-	-rm -d $(OUTDIR)
+	-rm -fr $(OUTDIR)/$(TARGET) $(OUTDIR)/*.o $(OUTDIR)/*.lst $(OUTDIR)/*.d
+	-rm -fr $(OUTDIR)
 		
