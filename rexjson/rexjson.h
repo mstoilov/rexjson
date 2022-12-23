@@ -1,3 +1,23 @@
+/*
+ *  Sigmadrone
+ *  Copyright (c) 2013-2015 The Sigmadrone Developers
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  Martin Stoilov <martin@sigmadrone.org>
+ */
+
 #ifndef REXJSON_H_
 #define REXJSON_H_
 
@@ -16,20 +36,20 @@ extern "C" {
 #define REXJSON_E_MAXRECURSIONS 6
 
 typedef enum {
-    REXJSON_VALUE_NULL = 0,
-    REXJSON_VALUE_TRUE,
-    REXJSON_VALUE_FALSE,
-    REXJSON_VALUE_INT,
-    REXJSON_VALUE_NUMBER,
-    REXJSON_VALUE_STRING,
-    REXJSON_VALUE_ARRAY,
-    REXJSON_VALUE_OBJECT,
+	REXJSON_VALUE_NULL = 0,
+	REXJSON_VALUE_TRUE,
+	REXJSON_VALUE_FALSE,
+	REXJSON_VALUE_INT,
+	REXJSON_VALUE_NUMBER,
+	REXJSON_VALUE_STRING,
+	REXJSON_VALUE_ARRAY,
+	REXJSON_VALUE_OBJECT,
 } rexjson_valuetype_t;
 
 typedef enum {
-    REXJSON_RECORD_NONE = 0,
-    REXJSON_RECORD_BEGIN = 1,
-    REXJSON_RECORD_END,
+	REXJSON_RECORD_NONE = 0,
+	REXJSON_RECORD_BEGIN = 1,
+	REXJSON_RECORD_END,
 } rexjson_recordtype_t;
 
 typedef struct rexjson_record rexjson_record_t;
@@ -39,12 +59,12 @@ typedef struct rexjson_record rexjson_record_t;
  * This structure is used to build the parsed JSON tree
  */
 typedef struct rexjson_record {
-    rexjson_recordtype_t rectype;   /* This can one of: REXJSON_RECORD_NONE, REXJSON_RECORD_BEGIN, REXJSON_RECORD_END */
-    rexjson_valuetype_t valtype;    /* This is the JSON value type: REXJSON_VALUE_NULL, REXJSON_VALUE_TRUE, ... , REXJSON_VALUE_OBJECT */
-    size_t name;                    /* offset in the buffer */
-    size_t namesize;                /* length of the name string */
-    size_t value;                   /* offset in the buffer */
-    size_t valuesize;               /* length of the value string */
+	rexjson_recordtype_t rectype;   /* This can one of: REXJSON_RECORD_NONE, REXJSON_RECORD_BEGIN, REXJSON_RECORD_END */
+	rexjson_valuetype_t valtype;    /* This is the JSON value type: REXJSON_VALUE_NULL, REXJSON_VALUE_TRUE, ... , REXJSON_VALUE_OBJECT */
+	size_t name;                    /* offset in the buffer */
+	size_t namesize;                /* length of the name string */
+	size_t value;                   /* offset in the buffer */
+	size_t valuesize;               /* length of the value string */
 } rexjson_record_t;
 
 /**
@@ -52,19 +72,19 @@ typedef struct rexjson_record {
  * This structure is the parsing context.
  */
 typedef struct {
-    int stacksize;
-    int top;
-    size_t levels;
-    rexjson_record_t *stack;
-    int token_id;
-    const char *token_str;
-    size_t token_offset;
-    size_t token_size;
-    size_t offset;
-    size_t bufsize;
-    size_t error_offset;
-    int error;
-    const char *buffer;
+	int stacksize;
+	int top;
+	size_t levels;
+	rexjson_record_t *stack;
+	int token_id;
+	const char *token_str;
+	size_t token_offset;
+	size_t token_size;
+	size_t offset;
+	size_t bufsize;
+	size_t error_offset;
+	int error;
+	const char *buffer;
 } rexjson_t;
 
 /**
