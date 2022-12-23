@@ -1,12 +1,14 @@
 DEBUG ?= yes
 PLATFORM ?= unix
-BIN_DIR ?= lib
+OBJ_DIR ?= obj
 PROJECT_BIN_DIR ?= build/$(PLATFORM)/bin
+BIN_DIR = $(ROOT_DIR)/$(PROJECT_BIN_DIR)
 CFLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-implicit-fallthrough
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 CXXFLAGS = -std=gnu++14
 LDFLAGS = 
+LIBS = -L$(ROOT_DIR)/$(PROJECT_BIN_DIR)
 
 ifeq ($(DEBUG), no)
 CFLAGS += -O2

@@ -1,52 +1,38 @@
-
-OUTDIR = bin
 ROOT_DIR = ../../../..
-SRC_DIR = ../..
-INCLUDE += -I$(SRC_DIR)
-INCLUDE += -I$(ROOT_DIR) 
+include $(ROOT_DIR)/build/unix/config.mk
+
 TARGET = dom
+CFLAGS += -I$(ROOT_DIR)
 LIBS += -lrexjson++
-LIBDIRS = -L$(ROOT_DIR)/rexjson/build/unix/lib
 
-CPP = g++
-CC = gcc
-LD = gcc
-AR = ar
 
-ifeq ($(BLDCFG), release)
-CFLAGS = -O3 $(INCLUDE) -DUNIX
-else
-CFLAGS = -g -Wall $(INCLUDE) -DUNIX -DDEBUG
-endif
-
-CXXFLAGS = -std=c++14
-
-all: $(OUTDIR)/$(TARGET)
+all: $(BIN_DIR)/$(TARGET)
 
 #######################################
 # dependencies
 #######################################
 -include $(wildcard $(OUTDIR)/*.d)
 
-# Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+SRC_DIR = ../..
+OBJECTS += $(addprefix $(OBJ_DIR)/, $(patsubst %.cpp,%.o,$(notdir $(wildcard $(SRC_DIR)/*.cpp))))
+vpath %.cpp $(SRC_DIR)
 
-OBJECTS += $(addprefix $(OUTDIR)/, $(patsubst %.cpp,%.o,$(notdir $(wildcard $(SRC_DIR)/*.cpp))))
-vpath %.cpp $(SRC_DIR)/
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -o $(OBJ_DIR)/$*.o -c $(SRC_DIR)/$*.c
 
-$(OUTDIR)/%.o: $(SRC_DIR)/%.c | $(OUTDIR)
-	$(CC) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) $(CFLAGS) -o $(OBJ_DIR)/$*.o -c $(SRC_DIR)/$*.cpp
 
-$(OUTDIR)/%.o: $(SRC_DIR)/%.cpp | $(OUTDIR)
-	$(CPP) $(CXXFLAGS) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.cpp
+$(BIN_DIR)/$(TARGET): $(OBJECTS) 
+	$(CXX) -o $@ $^ $(LIBS) $(LIBDIRS)
 
-$(OUTDIR)/$(TARGET): $(OBJECTS) 
-	$(CPP) -o $@ $^ $(LIBS) $(LIBDIRS)
+$(BIN_DIR):
+	@mkdir $@
 
-$(OUTDIR):
+$(OBJ_DIR):
 	@mkdir $@
 
 clean:
-	-rm -fr $(OUTDIR)/$(TARGET) $(OUTDIR)/*.o $(OUTDIR)/*.lst $(OUTDIR)/*.d
-	-rm -fr $(OUTDIR)
+	-rm -fr $(BIN_DIR)/$(TARGET) $(OBJ_DIR)/*.o $(OBJ_DIR)/*.lst $(OBJ_DIR)/*.d
+	-rm -fr $(OBJ_DIR)
 		
