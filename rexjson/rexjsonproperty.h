@@ -210,7 +210,7 @@ public:
     void *ctx_ = nullptr;
 
 
-    virtual iproperty_object* duplicate() const
+    virtual iproperty_object* duplicate() const override
     {
         return new property_object(propaddr_, access_, check_hook_, modified_hook_, ctx_);
     }
@@ -400,7 +400,7 @@ public:
         return (operator [](trimmed)).navigate(restpath);
     }
 
-    virtual property& operator[](const std::string& name)
+    virtual property& operator[](const std::string& name) override
     {
         std::map<std::string, property>::iterator it = map_.find(name);
         if (it == map_.end())
@@ -446,7 +446,7 @@ public:
         }
     }
 
-    virtual property& navigate(property &parent, const std::string& path)
+    virtual property& navigate(property &parent, const std::string& path) override
     {
         std::string toc = path;
         if (!toc.size() || toc.at(0) != '[')
@@ -461,7 +461,7 @@ public:
         return (operator [](toc)).navigate(restpath);
     }
 
-    virtual property& operator[](const std::string& name)
+    virtual property& operator[](const std::string& name) override
     {
         size_t idx = atol(name.c_str());
         if (idx >= array_.size())

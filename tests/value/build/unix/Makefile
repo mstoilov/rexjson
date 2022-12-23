@@ -4,9 +4,9 @@ ROOT_DIR = ../../../..
 SRC_DIR = ../..
 INCLUDE += -I$(SRC_DIR)
 INCLUDE += -I$(ROOT_DIR) 
-TARGET = dom
-LIBS += -lrexjson -static
-LIBDIRS = -L$(ROOT_DIR)/rexjson/build/linux/bin
+TARGET = value
+LIBS += -lrexjson++
+LIBDIRS = -L$(ROOT_DIR)/rexjson/build/unix/lib
 
 CPP = g++ -std=c++14
 CC = gcc

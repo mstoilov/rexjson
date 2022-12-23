@@ -5,10 +5,10 @@ SRC_DIR = ../..
 INCLUDE += -I$(SRC_DIR)
 INCLUDE += -I$(ROOT_DIR) 
 TARGET = parser
-LIBS += -lrexjson -static
-LIBDIRS = -L$(ROOT_DIR)/rexjson/build/linux/bin
+LIBS += -lrexjson++
+LIBDIRS = -L$(ROOT_DIR)/rexjson/build/unix/lib
 
-CPP = g++ -std=c++14
+CPP = g++ -std=c++11
 CC = gcc
 LD = gcc
 AR = ar

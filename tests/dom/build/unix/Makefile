@@ -4,11 +4,11 @@ ROOT_DIR = ../../../..
 SRC_DIR = ../..
 INCLUDE += -I$(SRC_DIR)
 INCLUDE += -I$(ROOT_DIR) 
-TARGET = rpcserver
-LIBS += -lrexjson -static
-LIBDIRS = -L$(ROOT_DIR)/rexjson/build/linux/bin
+TARGET = dom
+LIBS += -lrexjson++
+LIBDIRS = -L$(ROOT_DIR)/rexjson/build/unix/lib
 
-CPP = g++ -std=c++14
+CPP = g++
 CC = gcc
 LD = gcc
 AR = ar
@@ -19,6 +19,7 @@ else
 CFLAGS = -g -Wall $(INCLUDE) -DUNIX -DDEBUG
 endif
 
+CXXFLAGS = -std=c++14
 
 all: $(OUTDIR)/$(TARGET)
 
@@ -37,7 +38,7 @@ $(OUTDIR)/%.o: $(SRC_DIR)/%.c | $(OUTDIR)
 	$(CC) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.c
 
 $(OUTDIR)/%.o: $(SRC_DIR)/%.cpp | $(OUTDIR)
-	$(CPP) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.cpp
+	$(CPP) $(CXXFLAGS) $(CFLAGS) -o $(OUTDIR)/$*.o -c $(SRC_DIR)/$*.cpp
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) 
 	$(CPP) -o $@ $^ $(LIBS) $(LIBDIRS)
@@ -47,5 +48,5 @@ $(OUTDIR):
 
 clean:
 	-rm -fR $(OUTDIR)/$(TARGET) $(OUTDIR)/*.o $(OUTDIR)/*.lst $(OUTDIR)/*.d
-	-rm -d $(OUTDIR)
+	-rm -rf $(OUTDIR)
 		
