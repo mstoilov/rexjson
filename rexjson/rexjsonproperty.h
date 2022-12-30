@@ -73,7 +73,7 @@ public:
 	std::function<void(void *ctx)> modified_hook_ = {};
 	void* ctx_ = nullptr;
 
-	virtual iproperty_object* duplicate() const
+	virtual iproperty_object* duplicate() const override
 	{
 		return new property_object(propaddr_, access_, check_hook_, modified_hook_, ctx_);
 	}

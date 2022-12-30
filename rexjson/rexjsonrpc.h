@@ -31,6 +31,8 @@
 #define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
 #endif
 
+#include <array>
+
 namespace rexjson {
 
 enum rpc_error_code
