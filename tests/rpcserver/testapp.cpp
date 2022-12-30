@@ -7,6 +7,9 @@
 
 class rpc_test_server : public rexjson::rpc_server<rpc_test_server>
 {
+public:
+    rpc_test_server() {};
+    virtual ~rpc_test_server() {};
 
 };
 
