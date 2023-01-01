@@ -1,0 +1,5 @@
+{
+    "id" : 0,
+    "method" : "get_sequence",
+    "params" : [5]
+}
