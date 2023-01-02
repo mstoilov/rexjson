@@ -1,6 +1,5 @@
 /*
- *  Sigmadrone
- *  Copyright (c) 2013-2015 The Sigmadrone Developers
+ *  Copyright (c) 2013-2023 Martin Stoilov
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
