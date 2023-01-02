@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 #include "rexjson/rexjsonproperty.h"
-#include "rexjson/rexjsonpropertyex.h"
 #include "rpctestserver.h"
 
 
@@ -48,15 +47,14 @@ public:
 	size_t year_;
 	float weight_;
 
-	rexjson::property health = rexjson::property_map({
-		{"weight", &weight_},
-	});
 	rexjson::property props = rexjson::property_map({
-		{"name", &name_},
-		{"day", &day_},
-		{"month", &month_},
-		{"year", &year_},
-		{"health", {health}}
+		{"name", {rexjson::property(&name_, [](void*ctx)->rexjson::value{ return "Chucki Chun"; }, rexjson::property_set<std::string>)}},
+		{"day", {&day_, rexjson::property_get<decltype(day_)>}},
+		{"month", {&month_, rexjson::property_get<decltype(month_)>}},
+		{"year", {&year_, rexjson::property_get<decltype(year_)>}},
+		{"health", rexjson::property_map({
+			{"weight", {&weight_, rexjson::property_get<decltype(weight_)>}},
+		})}
 	});
 
 };
@@ -74,39 +72,13 @@ void register_rpc_methods(rpc_test_server& server)
 	server.add("get_sequence", rexjson::make_rpc_wrapper(get_sequence, "get_sequence(size_t count)"));
 }
 
+
 int main(int argc, const char *argv[])
 {
 	try {
 		rpc_test_server server;
 		std::stringstream iss;
 		Person joe("Joe Dough", 31, 10, 1970, 74.5);
-		rexjson::property propname(&joe.name_);
-		rexjsonex::property propyear(
-			&joe.year_,
-			rexjsonex::property_get<size_t>,
-			rexjsonex::property_set<size_t>
-		);
-
-		rexjsonex::property propday(
-			&joe.day_,
-			rexjsonex::property_get<size_t>,
-			rexjsonex::property_set<size_t>
-		);
-
-		rexjsonex::property propmonth(
-			&joe.month_,
-			rexjsonex::property_get<size_t>,
-			rexjsonex::property_set<size_t>
-		);
-
-		rexjsonex::property props = rexjsonex::property_map({
-			{"joe", rexjsonex::property_map({
-				{"year", rexjsonex::property(&joe.year_, rexjsonex::property_get<size_t>, rexjsonex::property_set<size_t>)},
-				{"month", {&joe.month_, rexjsonex::property_get<size_t>, rexjsonex::property_set<size_t>}},
-				{"day", rexjsonex::property(&joe.day_, rexjsonex::property_get<size_t>, rexjsonex::property_set<size_t>)},
-				})
-			}
-		});
 
 		joe.register_rpc_methods(server, "joe.");
 		register_rpc_methods(server);
@@ -122,21 +94,13 @@ int main(int argc, const char *argv[])
 
 		rexjson::value ret = server.call(iss.str());
 		std::cout << ret["result"] << std::endl;
-//      std::cout << rexjson::read(iss.str()).write(true) << std::endl;
-		propname.set_prop("Jony Hong");
 		std::cout << joe << std::endl;
 
-		std::cout << propname.get_prop() << std::endl;
-		std::cout << joe.props.navigate("health.weight").get_prop() << std::endl;
-		propyear.set(rexjson::value(1972));
-		std::cout << propyear.get() << "/" << propmonth.get() << "/" << propday.get() << std::endl;
-		std::cout << props["joe"]["year"].get() << "/" << props["joe"]["month"].get() << "/" << props["joe"]["day"].get() << std::endl;
-		std::cout << props.navigate("joe.year").get() << "/" << props.navigate("joe.month").get() << "/" << props.navigate("joe.day").get() << std::endl;
+		std::cout << joe.props["name"].get() << std::endl;
+		std::cout << joe.props.navigate("health.weight").get() << std::endl;
+		// joe.props.set(rexjson::value(1972));
 
-		joe.props.enumerate_children("joe", [](const std::string& path, rexjson::property& prop) { std::cout << path << " : " << prop.get_prop() << std::endl; });
-
-		props.enumerate(props, "joeboe", [](const std::string& path, rexjsonex::property& prop) { std::cout << path << " : " << prop.get() << std::endl; });
-
+		joe.props.enumerate(joe.props, "joe", [](const std::string& path, rexjson::property& prop) { std::cout << path << " : " << prop.get() << std::endl; });
 	} catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}

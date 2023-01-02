@@ -28,6 +28,7 @@
 
 namespace rexjson {
 
+
 /*
 * Convert void* to
 * rexjson::value 
@@ -35,7 +36,8 @@ namespace rexjson {
 template<typename T>
 rexjson::value property_get(void* ctx)
 {
-	return *static_cast<T*>(ctx);
+	T ret = *static_cast<T*>(ctx); 
+	return rexjson::value(ret);
 }
 
 /*
@@ -69,7 +71,7 @@ public:
 	{
 	}
 
-	property_leaf(void* ctx, const std::function<const rexjson::value& (void* ctx)>& getter)
+	property_leaf(void* ctx, const std::function<rexjson::value(void* ctx)>& getter)
 		: ctx_(ctx), getter_(getter)
 	{
 	}
@@ -84,7 +86,7 @@ public:
 		if (!getter_) 
 			throw std::runtime_error("No read operation defined for the property.");
 		rexjson::value ret = getter_(ctx_);
-		std::cout << "get(): " << ret.to_string() << std::endl;
+		// std::cout << "get(): " << ret.to_string() << std::endl;
 		return ret;
 
 	}
@@ -121,7 +123,6 @@ public:
 		throw std::runtime_error("operator[] not implemented.");
 	}
 
-
 	void* ctx_;
 	std::function<rexjson::value (void* ctx)> getter_;
 	std::function<void(const rexjson::value& value, void* ctx)> setter_;
@@ -138,7 +139,7 @@ public:
 	{
 	}
 
-	property(void* ctx, const std::function<const rexjson::value& (void* ctx)>& getter)
+	property(void* ctx, const std::function<rexjson::value(void* ctx)>& getter)
 		: property_object_(new property_leaf(ctx, getter))
 	{
 	}
@@ -161,7 +162,8 @@ public:
 
 	rexjson::value get() const
 	{
-		return property_object_->get();
+		rexjson::value ret = property_object_->get();
+		return ret;
 	}
 
 	void set(const rexjson::value& value) 
