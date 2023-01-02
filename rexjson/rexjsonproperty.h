@@ -52,6 +52,13 @@ void property_set(const rexjson::value& val, void* ctx)
 class property;
 using enumerate_children_callback = std::function<void(const std::string&, property&)>;
 
+enum property_access {
+	access_none = 0,
+	access_read = 1,
+	access_write = 2,
+	access_readwrite = 3,
+};
+
 class iproperty {
 public:
 	virtual ~iproperty() { }
@@ -62,6 +69,7 @@ public:
 	virtual void enumerate(property& thisprop, const std::string& path, const enumerate_children_callback& callback) = 0;
 	virtual property& navigate(const std::string& path) = 0;
 	virtual property& operator[](const std::string& name) = 0;
+	virtual property_access access() = 0;
 };
 
 class property_leaf : public iproperty {
@@ -121,6 +129,17 @@ public:
 	virtual property& operator[](const std::string& name) override
 	{
 		throw std::runtime_error("operator[] not implemented.");
+	}
+
+	virtual property_access access() override
+	{
+		if (getter_ && setter_)
+			return property_access::access_readwrite;
+		else if (getter_)
+			return property_access::access_read;
+		else if (setter_)
+			return property_access::access_write;
+		return property_access::access_none;
 	}
 
 	void* ctx_;
@@ -190,6 +209,11 @@ public:
 	property& operator[](const std::string& name)
 	{
 		return property_object_->operator[](name);
+	}
+
+	property_access access()
+	{
+		return property_object_->access();
 	}
 
 	value to_json()
@@ -264,7 +288,12 @@ public:
 		if (it == map_.end())
 			throw std::runtime_error("Invalid property: " + name);
 		return it->second;
-	}	
+	}
+
+	virtual property_access access() override
+	{
+		return property_access::access_readwrite;
+	}
 };
 
 inline property::property(const property_map& map)

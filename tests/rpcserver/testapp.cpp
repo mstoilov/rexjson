@@ -48,8 +48,8 @@ public:
 	float weight_;
 
 	rexjson::property props = rexjson::property_map({
-		{"name", {rexjson::property(&name_, [](void*ctx)->rexjson::value{ return "Chucki Chun"; }, rexjson::property_set<std::string>)}},
-		{"day", {&day_, rexjson::property_get<decltype(day_)>}},
+		{"name", {rexjson::property(&name_, rexjson::property_get<std::string>, rexjson::property_set<std::string>)}},
+		{"day", {&day_, rexjson::property_get<decltype(day_)>, rexjson::property_set<decltype(day_)>}},
 		{"month", {&month_, rexjson::property_get<decltype(month_)>}},
 		{"year", {&year_, rexjson::property_get<decltype(year_)>}},
 		{"health", rexjson::property_map({
@@ -98,6 +98,12 @@ int main(int argc, const char *argv[])
 
 		std::cout << joe.props["name"].get() << std::endl;
 		std::cout << joe.props.navigate("health.weight").get() << std::endl;
+
+		if ( joe.props.navigate("day").access() & rexjson::property_access::access_write )
+			joe.props.navigate("day").set(11);
+		else
+			std::cout << "Property da is not writable" << std::endl;
+
 		// joe.props.set(rexjson::value(1972));
 
 		joe.props.enumerate(joe.props, "joe", [](const std::string& path, rexjson::property& prop) { std::cout << path << " : " << prop.get() << std::endl; });
