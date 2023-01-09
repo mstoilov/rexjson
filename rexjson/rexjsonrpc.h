@@ -153,7 +153,7 @@ struct rpc_wrapper<void, Args...> : public rpc_wrapperbase<void, Args...>
 		auto is = std::index_sequence_for<Args...>();
 		std::tuple<Args...> tuple = base::params_to_tuple(params, is);
 		base::call_with_tuple(tuple, is);
-		return std::string();
+		return rexjson::value();
 	}
 
 	rexjson::value operator()(const rexjson::array& params, rpc_exec_mode mode)
@@ -435,9 +435,7 @@ public:
 	rexjson::value call(const rexjson::value& val, rpc_exec_mode mode = execute)
 	{
 		rexjson::object ret;
-		rexjson::value result;
-		rexjson::value error;
-		rexjson::value id;
+		rexjson::value id("unknown");
 		rexjson::array params;
 
 		try {
@@ -454,18 +452,18 @@ public:
 			rexjson::object::const_iterator method_it = val.get_obj().find("method");
 			if (method_it == val.get_obj().end())
 				throw create_rpc_error(RPC_INVALID_REQUEST, "missing method");
-			result = call_method_name(method_it->second, params, mode);
+			ret["result"] = call_method_name(method_it->second, params, mode);
+			ret["id"] = id;
 		} catch (rexjson::object& e) {
-			error = e;
+			ret["id"] = id;
+			ret["error"] = e;
 		} catch (std::exception& e) {
 			rexjson::object errobj;
 			errobj["message"] = e.what();
 			errobj["code"] = RPC_MISC_ERROR;
-			error = errobj;
+			ret["id"] = id;
+			ret["error"] = errobj;
 		}
-		ret["result"] = result;
-		ret["id"] = id;
-		ret["error"] = error;
 		return ret;
 	}
 
@@ -490,16 +488,15 @@ public:
 			val.read(request);
 			return call(val, mode);
 		} catch (rexjson::object& e) {
-			error = e;
+			ret["id"] = id;
+			ret["error"] = e;
 		} catch (std::exception& e) {
 			rexjson::object errobj;
 			errobj["message"] = e.what();
 			errobj["code"] = RPC_MISC_ERROR;
-			error = errobj;
+			ret["id"] = id;
+			ret["error"] = errobj;
 		}
-		ret["result"] = result;
-		ret["id"] = id;
-		ret["error"] = error;
 		return ret;
 	}
 

@@ -144,12 +144,12 @@ public:
 
 	value& operator=(const value& v);
 	value& operator=(value&& v);
-	explicit operator float() { return get_real(); }
-	explicit operator double() { return get_real(); }
-	explicit operator int() { return get_int(); }
-	explicit operator uint() { return get_int(); }
-	explicit operator int64_t() { return get_int64(); }
-	explicit operator bool() { return get_bool(); }
+	explicit operator float() const { return get_real(); }
+	explicit operator double() const { return get_real(); }
+	explicit operator int() const { return get_int(); }
+	explicit operator unsigned int() const { return get_int(); }
+	explicit operator int64_t() const { return get_int64(); }
+	explicit operator bool() const { return get_bool(); }
 
 	void check_type(value_type vtype) const;
 
