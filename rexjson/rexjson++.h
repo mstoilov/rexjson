@@ -85,6 +85,15 @@ public:
 	value(double v);
 	value(const object& v);
 	value(const array& v);
+
+	template<typename T>
+	value(const std::vector<T>& v)
+	{
+		value_type_ = array_type;
+		store_.v_array_ = new array();
+		for (const auto& i : v)
+			store_.v_array_->push_back(i);
+	}
 	~value();
 
 	/**
@@ -125,10 +134,14 @@ public:
 	std::string to_string() const;
 	static std::string get_typename(unsigned int type);
 
-	template<typename T> void get(T& ret) const
-	{
-		ret = get_int();
-	}
+	template<typename T> void get(std::vector<T>& ret) const	{}
+	template<typename T> void get(T& ret) const					{ ret = get_int(); }
+	template<> void get<int64_t>(int64_t& ret) const			{ ret = get_int64(); }
+	template<> void get<bool>(bool& ret) const					{ ret = get_bool(); }
+	template<> void get<double>(double& ret) const				{ ret = get_real(); }
+	template<> void get<float>(float& ret) const				{ ret = get_real(); }
+	template<> void get<std::string>(std::string& ret) const	{ ret = get_str(); }
+
 
 	void set(const object& v) {
 		operator=(v);
@@ -142,14 +155,34 @@ public:
 		return ret;
 	}
 
+	template<>
+	std::vector<int> get_value<std::vector<int>>() const
+	{
+		std::vector<int> ret;
+		// get<T>(ret);
+		return ret;
+	}
+
+
 	value& operator=(const value& v);
 	value& operator=(value&& v);
 	explicit operator float() const { return get_real(); }
 	explicit operator double() const { return get_real(); }
 	explicit operator int() const { return get_int(); }
-	explicit operator unsigned int() const { return get_int(); }
+	explicit operator uint() const { return get_int(); }
 	explicit operator int64_t() const { return get_int64(); }
 	explicit operator bool() const { return get_bool(); }
+	explicit operator unsigned long () const { return get_int64(); }
+
+	template<typename T>
+	explicit operator std::vector<T> () const 
+	{ 
+		check_type(array_type); 
+		std::vector<T> ret; 
+		for (const auto& i : *store_.v_array_) 
+			ret.push_back(static_cast<T>(i));
+		return ret;
+	}
 
 	void check_type(value_type vtype) const;
 
@@ -211,13 +244,6 @@ protected:
 	size_t offset_;
 	size_t levels_;
 };
-
-
-template<> inline void value::get<int64_t>(int64_t& ret) const          { ret = get_int64(); }
-template<> inline void value::get<bool>(bool& ret) const                { ret = get_bool(); }
-template<> inline void value::get<double>(double& ret) const            { ret = get_real(); }
-template<> inline void value::get<float>(float& ret) const              { ret = get_real(); }
-template<> inline void value::get<std::string>(std::string& ret) const  { ret = get_str(); }
 
 
 class output {

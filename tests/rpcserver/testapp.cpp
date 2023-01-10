@@ -15,6 +15,22 @@ rexjson::array get_sequence(size_t count)
 	return ret;
 }
 
+std::vector<int> get_sequence_vector(size_t count)
+{
+	std::vector<int> ret;
+	for (size_t i = 0; i < count; i++)
+		ret.push_back(i+10);
+	return ret;
+}
+
+std::vector<int> get_echo_vector(std::vector<int> v)
+{
+	std::vector<int> ret;
+	for (const auto& i : v)
+		ret.push_back(i);
+	return ret;
+}
+
 class Person
 {
 public:
@@ -66,10 +82,11 @@ std::ostream& operator<<(std::ostream& os, const Person& p)
 }
 
 
-
 void register_rpc_methods(rpc_test_server& server)
 {
 	server.add("get_sequence", rexjson::make_rpc_wrapper(get_sequence, "get_sequence(size_t count)"));
+	server.add("get_sequence_vector", rexjson::make_rpc_wrapper(get_sequence_vector, "get_sequence_vector(size_t count)"));
+	server.add("get_echo_vector", rexjson::make_rpc_wrapper(get_echo_vector, "get_echo_vector(std::vector<int> v)"));
 }
 
 
@@ -93,7 +110,11 @@ int main(int argc, const char *argv[])
 		}
 
 		rexjson::value ret = server.call(iss.str());
-		std::cout << ret["result"] << std::endl;
+		if (ret["error"].get_type() != rexjson::null_type) {
+			std::cout << ret["error"]["message"] << std::endl;
+		} else {
+			std::cout << ret["result"] << std::endl;
+		}
 		std::cout << joe << std::endl;
 
 		std::cout << joe.props["name"].get() << std::endl;
