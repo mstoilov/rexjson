@@ -84,17 +84,17 @@ struct rpc_type
 {
 	rpc_type(T)
 	{
-		if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<T>>, bool>) {
+		if (std::is_same<std::remove_reference_t<typename std::remove_cv<T>::type>, bool>::value) {
 			value = rexjson::bool_type;
-		} else if (std::is_integral_v<T>) {
+		} else if (std::is_integral<T>::value) {
 			value = rexjson::int_type;
-		} else if (std::is_floating_point_v<T>) {
+		} else if (std::is_floating_point<T>::value) {
 			value = rexjson::real_type;
-		} else if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<T>>, std::string>) {
+		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, std::string>::value) {
 			value = rexjson::str_type;
-		} else if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<T>>, rexjson::array>) {
+		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, rexjson::array>::value) {
 			value = rexjson::array_type;
-		} else if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<T>>, rexjson::object>) {
+		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, rexjson::object>::value) {
 			value = rexjson::obj_type;
 		} else {
 			value = rexjson::null_type;
@@ -140,7 +140,7 @@ protected:
 	template<std::size_t... is>
 	std::array<unsigned int, sizeof...(is)> make_types_array(const std::tuple<Args...>& tuple, std::index_sequence<is...>)
 	{
-		return {{rpc_type(std::get<is>(tuple)).value...}};
+		return {{rpc_type<Args>(std::get<is>(tuple)).value...}};
 	}
 
 	template<std::size_t... is>

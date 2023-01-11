@@ -52,15 +52,6 @@ int main(int argc, const char *argv[])
 
 		register_rpc_methods(server);
 
-		std::cout << rexjson::rpc_type(7u).value << std::endl;
-		std::cout << rexjson::rpc_type(7.2).value << std::endl;
-		std::cout << rexjson::rpc_type(false).value << std::endl;
-		std::cout << rexjson::rpc_type(std::string()).value << std::endl;
-		std::cout << rexjson::rpc_type(std::vector<int>()).value << std::endl;
-		std::cout << rexjson::rpc_type(rexjson::array()).value << std::endl;
-		std::cout << rexjson::rpc_type(rexjson::object()).value << std::endl;
-
-
 		if (argc > 1) {
 			std::ifstream file(argv[1]);
 			if (!file.is_open())

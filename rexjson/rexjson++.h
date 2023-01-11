@@ -138,11 +138,12 @@ public:
 	template<typename U>
 	struct converter {
 		static void get(U& ret, const value& v) {
-			if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<U>>, bool>) {
+			if (std::is_same<typename std::remove_reference<typename std::remove_cv<U>::type>::type, bool>::value)
+			{
 				ret = v.get_bool();
-			} else if (std::is_integral_v<std::remove_reference_t<std::remove_cv_t<U>>>) {
+			} else if (std::is_integral<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
 				ret = v.get_int64();
-			} else if (std::is_floating_point_v<std::remove_reference_t<std::remove_cv_t<U>>>) {
+			} else if (std::is_floating_point<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
 				ret = v.get_real();
 			} else {
 				throw(std::runtime_error(std::string("Unsupported conversion from: ") + v.get_typename(v.get_type())));
