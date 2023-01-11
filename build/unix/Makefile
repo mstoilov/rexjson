@@ -3,6 +3,7 @@ SUBDIRS += ../../tests/dom/build/unix
 SUBDIRS += ../../tests/parser/build/unix
 SUBDIRS += ../../tests/value/build/unix
 SUBDIRS += ../../tests/rpcserver/build/unix
+SUBDIRS += ../../tests/rpcproperty/build/unix
  	
 all:
 	@for dir in $(SUBDIRS); do \
