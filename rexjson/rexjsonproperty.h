@@ -45,7 +45,7 @@ rexjson::value property_get(void* ctx)
 template<typename T>
 void property_set(const rexjson::value& val, void* ctx)
 {
-	val.get(*static_cast<T*>(ctx));
+	*static_cast<T*>(ctx) = val.get<T>();
 }
 
 class property;

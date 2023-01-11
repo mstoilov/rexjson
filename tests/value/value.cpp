@@ -76,14 +76,12 @@ int main(int argc, const char *argv[])
 			int i;
 			float f;
 			std::string s;
-			v.get<int>(i);
-			std::cout << "v.get<int>(i) : " << i << std::endl;
+			v.get<int>();
+			std::cout << "v.get<int>() : " << v.get<int>() << std::endl;
 			v = 5.2;
-			v.get<float>(f);
-			std::cout << "v.get<float>(f) : " << f << std::endl; 
+			std::cout << "v.get<float>(f) : " << v.get<float>() << std::endl; 
 			v = "this is a string";
-			v.get<std::string>(s);
-			std::cout << "v.get<string>(s) : " << s << std::endl; 
+			std::cout << "v.get<string>(s) : " << v.get<std::string>() << std::endl; 
 		}
 
 

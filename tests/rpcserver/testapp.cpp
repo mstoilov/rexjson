@@ -1,11 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <type_traits>
 
 #include "rexjson/rexjsonproperty.h"
 #include "rpctestserver.h"
 
-
+template<typename T>
+struct DT {
+	DT()
+	// {}
+	;
+};
 
 rexjson::array get_sequence(size_t count)
 {
@@ -45,6 +51,15 @@ int main(int argc, const char *argv[])
 		std::stringstream iss;
 
 		register_rpc_methods(server);
+
+		std::cout << rexjson::rpc_type(7u).value << std::endl;
+		std::cout << rexjson::rpc_type(7.2).value << std::endl;
+		std::cout << rexjson::rpc_type(false).value << std::endl;
+		std::cout << rexjson::rpc_type(std::string()).value << std::endl;
+		std::cout << rexjson::rpc_type(std::vector<int>()).value << std::endl;
+		std::cout << rexjson::rpc_type(rexjson::array()).value << std::endl;
+		std::cout << rexjson::rpc_type(rexjson::object()).value << std::endl;
+
 
 		if (argc > 1) {
 			std::ifstream file(argv[1]);

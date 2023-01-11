@@ -135,18 +135,37 @@ public:
 	std::string to_string() const;
 	static std::string get_typename(unsigned int type);
 
-	template<typename T> void get(T& ret) const					{ ret = get_int(); }
+	template<typename U>
+	struct converter {
+		static void get(U& ret, const value& v) {
+			if (std::is_same_v<std::remove_reference_t<std::remove_cv_t<U>>, bool>) {
+				ret = v.get_bool();
+			} else if (std::is_integral_v<std::remove_reference_t<std::remove_cv_t<U>>>) {
+				ret = v.get_int64();
+			} else if (std::is_floating_point_v<std::remove_reference_t<std::remove_cv_t<U>>>) {
+				ret = v.get_real();
+			} else {
+				throw(std::runtime_error(std::string("Unsupported conversion from: ") + v.get_typename(v.get_type())));
+			}
 
+		}
+	};
 
-	void set(const object& v) {
-		operator=(v);
-	}
+	template<typename U>
+	struct converter<std::vector<U>> {
+		static void get(std::vector<U>& ret, const value& v) {
+			const array& arr = v.get_array();
+			for (auto& i : arr) {
+				ret.push_back(static_cast<U>(i));
+			}
+		}
+	};
 
 	template<typename T>
-	T get_value() const
+	T get() const
 	{
 		T ret;
-		get<T>(ret);
+		converter<T>().get(ret, *this);
 		return ret;
 	}
 
@@ -295,11 +314,11 @@ inline std::string write_formatted(const value& v)
 	return v.write(true);
 }
 
-template<> inline void value::get<int64_t>(int64_t& ret) const			{ ret = get_int64(); }
-template<> inline void value::get<bool>(bool& ret) const				{ ret = get_bool(); }
-template<> inline void value::get<double>(double& ret) const		 	{ ret = get_real(); }
-template<> inline void value::get<float>(float& ret) const				{ ret = get_real(); }
-template<> inline void value::get<std::string>(std::string& ret) const	{ ret = get_str(); }
+// template<> inline void value::get<int64_t>(int64_t& ret) const			{ ret = get_int64(); }
+// template<> inline void value::get<bool>(bool& ret) const				{ ret = get_bool(); }
+// template<> inline void value::get<double>(double& ret) const		 	{ ret = get_real(); }
+// template<> inline void value::get<float>(float& ret) const				{ ret = get_real(); }
+// template<> inline void value::get<std::string>(std::string& ret) const	{ ret = get_str(); }
 
 } // namespace rexjson
 
