@@ -118,6 +118,7 @@ public:
 
 	value& push_back(const value& v = value::null);
 	value& operator[](size_t i);
+	value& operator[](const char* name);
 	value& operator[](const std::string& name);
 	object& get_obj();
 	const object& get_obj() const;
@@ -134,13 +135,7 @@ public:
 	std::string to_string() const;
 	static std::string get_typename(unsigned int type);
 
-	template<typename T> void get(std::vector<T>& ret) const	{}
 	template<typename T> void get(T& ret) const					{ ret = get_int(); }
-	template<> void get<int64_t>(int64_t& ret) const			{ ret = get_int64(); }
-	template<> void get<bool>(bool& ret) const					{ ret = get_bool(); }
-	template<> void get<double>(double& ret) const				{ ret = get_real(); }
-	template<> void get<float>(float& ret) const				{ ret = get_real(); }
-	template<> void get<std::string>(std::string& ret) const	{ ret = get_str(); }
 
 
 	void set(const object& v) {
@@ -155,27 +150,21 @@ public:
 		return ret;
 	}
 
-	template<>
-	std::vector<int> get_value<std::vector<int>>() const
-	{
-		std::vector<int> ret;
-		// get<T>(ret);
-		return ret;
-	}
-
-
 	value& operator=(const value& v);
 	value& operator=(value&& v);
-	explicit operator float() const { return get_real(); }
-	explicit operator double() const { return get_real(); }
-	explicit operator int() const { return get_int(); }
-	explicit operator uint() const { return get_int(); }
-	explicit operator int64_t() const { return get_int64(); }
-	explicit operator bool() const { return get_bool(); }
-	explicit operator unsigned long () const { return get_int64(); }
+	operator bool() const { return get_bool(); }
+	operator float() const { return get_real(); }
+	operator double() const { return get_real(); }
+	operator int() const { return get_int(); }
+	operator unsigned int() const { return get_int(); }
+	operator unsigned long () const { return get_int64(); }
+	operator long long () const { return get_int64(); }
+	operator unsigned long long () const { return get_int64(); }
+	operator std::string () const { return get_str(); }
+	operator const char* () const { return get_str().c_str(); }
 
 	template<typename T>
-	explicit operator std::vector<T> () const 
+	operator std::vector<T> () const 
 	{ 
 		check_type(array_type); 
 		std::vector<T> ret; 
@@ -306,6 +295,11 @@ inline std::string write_formatted(const value& v)
 	return v.write(true);
 }
 
+template<> inline void value::get<int64_t>(int64_t& ret) const			{ ret = get_int64(); }
+template<> inline void value::get<bool>(bool& ret) const				{ ret = get_bool(); }
+template<> inline void value::get<double>(double& ret) const		 	{ ret = get_real(); }
+template<> inline void value::get<float>(float& ret) const				{ ret = get_real(); }
+template<> inline void value::get<std::string>(std::string& ret) const	{ ret = get_str(); }
 
 } // namespace rexjson
 

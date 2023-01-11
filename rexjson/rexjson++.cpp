@@ -403,6 +403,11 @@ value& value::operator[](const std::string& name)
 	return store_.v_object_->operator[](name);
 }
 
+value& value::operator[](const char* name)
+{
+	return operator[](std::string(name));
+}
+
 value& value::read(const std::string& str, size_t maxlevels)
 {
 	std::stringstream oss(str);
