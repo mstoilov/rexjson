@@ -163,9 +163,9 @@ public:
 	};
 
 	template<typename T>
-	T get() const
+	typename std::remove_reference<T>::type get() const
 	{
-		T ret;
+		typename std::remove_reference<T>::type ret;
 		converter<T>().get(ret, *this);
 		return ret;
 	}
