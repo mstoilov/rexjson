@@ -162,10 +162,21 @@ public:
 		}
 	};
 
+	template<typename U>
+	struct converter<const std::vector<U>&> {
+		static void get(std::vector<U>& ret, const value& v) {
+			const array& arr = v.get_array();
+			for (auto& i : arr) {
+				ret.push_back(static_cast<U>(i));
+			}
+		}
+	};
+
+
 	template<typename T>
-	typename std::remove_reference<T>::type get() const
+	T get() const
 	{
-		typename std::remove_reference<T>::type ret;
+		T ret;
 		converter<T>().get(ret, *this);
 		return ret;
 	}

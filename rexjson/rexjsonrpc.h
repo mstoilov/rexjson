@@ -79,40 +79,42 @@ enum rpc_exec_mode {
 };
 
 
-template<typename T>
-struct rpc_type
+template <typename I, std::enable_if_t<std::is_same<typename std::remove_reference<typename std::remove_cv<I>::type>::type, bool>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
 {
-	rpc_type(T)
-	{
-		if (std::is_same<std::remove_reference_t<typename std::remove_cv<T>::type>, bool>::value) {
-			value = rexjson::bool_type;
-		} else if (std::is_integral<T>::value) {
-			value = rexjson::int_type;
-		} else if (std::is_floating_point<T>::value) {
-			value = rexjson::real_type;
-		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, std::string>::value) {
-			value = rexjson::str_type;
-		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, rexjson::array>::value) {
-			value = rexjson::array_type;
-		} else if (std::is_same<typename std::remove_reference<typename std::remove_cv<T>::type>::type, rexjson::object>::value) {
-			value = rexjson::obj_type;
-		} else {
-			value = rexjson::null_type;
-		}
-	}
-	unsigned int value;
-};
+	return rexjson::bool_type;
+}
 
-template<typename T>
-struct rpc_type<std::vector<T>>
+template <typename I, 
+		std::enable_if_t<std::is_integral<typename std::remove_reference<typename std::remove_cv<I>::type>::type>::value && 
+						!std::is_same<typename std::remove_reference<typename std::remove_cv<I>::type>::type, bool>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
 {
-	rpc_type(std::vector<T>)
-	{
-		value = rexjson::array_type;
-	}
-	unsigned int value;
-};
+	return rexjson::int_type;
+}
 
+template <typename I, std::enable_if_t<std::is_floating_point<typename std::remove_reference<typename std::remove_cv<I>::type>::type>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
+{
+	return rexjson::real_type;
+}
+
+namespace helper 
+{
+	template<typename T>
+	struct is_vector : std::false_type{};
+
+	template<class T>
+	struct is_vector<std::vector<T> > : std::true_type {};
+
+}
+
+template <typename I, std::enable_if_t<helper::is_vector<typename std::remove_reference<typename std::remove_cv<I>::type>::type>::value ||
+			std::is_same<typename std::remove_reference<typename std::remove_cv<I>::type>::type, rexjson::array>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
+{
+	return rexjson::array_type;
+}
 
 template<typename Ret, typename ...Args>
 struct rpc_wrapperbase
@@ -121,7 +123,7 @@ struct rpc_wrapperbase
 		: f_(f)
 		, help_msg_(help_msg)
 	{
-		json_types_ = make_types_array(std::tuple<Args...>(), std::index_sequence_for<Args...>());
+		json_types_ = {get_rpc_type<Args...>() };
 	}
 
 	rexjson::value call(const rexjson::array& params, rpc_exec_mode mode)
@@ -138,15 +140,9 @@ struct rpc_wrapperbase
 
 protected:
 	template<std::size_t... is>
-	std::array<unsigned int, sizeof...(is)> make_types_array(const std::tuple<Args...>& tuple, std::index_sequence<is...>)
-	{
-		return {{rpc_type<Args>(std::get<is>(tuple)).value...}};
-	}
-
-	template<std::size_t... is>
 	std::tuple<Args...> params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
 	{
-		return std::make_tuple(Args(params[is].get<Args>())...);
+		return std::make_tuple(params[is].get<Args>()...);
 	}
 
 	template<std::size_t... is>
