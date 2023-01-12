@@ -33,7 +33,19 @@ class value;
 class input;
 class output;
 
-typedef std::map<std::string, value> object;
+// typedef std::map<std::string, value> object;
+
+class object : public std::map<std::string, value>
+{
+public:
+	using base = std::map<std::string, value>;
+	using base::map;
+	using base::operator[];
+	using base::find;
+
+	base::mapped_type& operator[](const std::string& n);
+	base::mapped_type operator[](const std::string& n) const;
+};
 
 class array : public std::vector<value>
 {
@@ -120,6 +132,9 @@ public:
 	value& operator[](size_t i);
 	value& operator[](const char* name);
 	value& operator[](const std::string& name);
+	value operator[](size_t i) const;
+	value operator[](const char* name) const;
+	value operator[](const std::string& name) const;
 	object& get_obj();
 	const object& get_obj() const;
 	array& get_array();
@@ -183,19 +198,21 @@ public:
 
 	value& operator=(const value& v);
 	value& operator=(value&& v);
-	operator bool() const { return get_bool(); }
-	operator float() const { return get_real(); }
-	operator double() const { return get_real(); }
-	operator int() const { return get_int(); }
-	operator unsigned int() const { return get_int(); }
-	operator unsigned long () const { return get_int64(); }
-	operator long long () const { return get_int64(); }
-	operator unsigned long long () const { return get_int64(); }
-	operator std::string () const { return get_str(); }
-	operator const char* () const { return get_str().c_str(); }
+	explicit operator bool() const { return get_bool(); }
+	explicit operator float() const { return get_real(); }
+	explicit operator double() const { return get_real(); }
+	explicit operator int() const { return get_int(); }
+	explicit operator unsigned int() const { return get_int(); }
+	explicit operator unsigned long () const { return get_int64(); }
+	explicit operator long long () const { return get_int64(); }
+	explicit operator unsigned long long () const { return get_int64(); }
+	explicit operator std::string () const { return get_str(); }
+	explicit operator const char* () const { return get_str().c_str(); }
+	explicit operator array () const { return get_array(); }
+	explicit operator object () const { return get_obj(); }
 
 	template<typename T>
-	operator std::vector<T> () const 
+	explicit operator std::vector<T> () const 
 	{ 
 		check_type(array_type); 
 		std::vector<T> ret; 

@@ -1,0 +1,5 @@
+{
+    "id" : 0,
+    "method" : "get_echoadd_vector",
+    "params" : [[17,18,19,20,21,22], 7]
+}

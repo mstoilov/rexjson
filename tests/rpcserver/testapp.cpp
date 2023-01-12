@@ -29,7 +29,7 @@ std::vector<int> get_sequence_vector(size_t count)
 	return ret;
 }
 
-std::vector<int> get_echo_vector(std::vector<int> v)
+std::vector<int> get_echo_vector(const std::vector<int>& v)
 {
 	std::vector<int> ret;
 	for (const auto& i : v)
@@ -37,11 +37,36 @@ std::vector<int> get_echo_vector(std::vector<int> v)
 	return ret;
 }
 
+std::vector<int> get_echoadd_vector(const std::vector<int>& v, const int& add)
+{
+	std::vector<int> ret;
+	for (const auto& i : v)
+		ret.push_back(i + add);
+	return ret;
+}
+
+std::vector<int> get_echoarrayadd_vector(const rexjson::array& v, const int& add)
+{
+	std::vector<int> ret;
+	for (const auto& i : v)
+		ret.push_back(i.get_int() + add);
+	return ret;
+}
+
+int get_add_result(const rexjson::object& v)
+{
+	return v["a"].get_int() + v["b"].get_int();
+}
+
+
 void register_rpc_methods(rpc_test_server& server)
 {
-	server.add("get_sequence", rexjson::make_rpc_wrapper(get_sequence, "get_sequence(size_t count)"));
-	server.add("get_sequence_vector", rexjson::make_rpc_wrapper(get_sequence_vector, "get_sequence_vector(size_t count)"));
-	server.add("get_echo_vector", rexjson::make_rpc_wrapper(get_echo_vector, "get_echo_vector(std::vector<int> v)"));
+	server.add("get_sequence", rexjson::make_rpc_wrapper(get_sequence, "std::vector<int> get_sequence(size_t count)"));
+	server.add("get_sequence_vector", rexjson::make_rpc_wrapper(get_sequence_vector, "std::vector<int> get_sequence_vector(size_t count)"));
+	server.add("get_echo_vector", rexjson::make_rpc_wrapper(get_echo_vector, "std::vector<int> get_echoadd_vector(const std::vector<int>& v, const int& add)"));
+	server.add("get_echoadd_vector", rexjson::make_rpc_wrapper(get_echoadd_vector, "std::vector<int> get_echoadd_vector(const std::vector<int>& v, const int& add)"));
+	server.add("get_echoarrayadd_vector", rexjson::make_rpc_wrapper(get_echoarrayadd_vector, "std::vector<int> get_echoarrayadd_vector(const rexjson::array& v, const int& add)"));
+	server.add("get_add_result", rexjson::make_rpc_wrapper(get_add_result, "int get_add_result(rexjson::object& v)"));
 }
 
 int main(int argc, const char *argv[])

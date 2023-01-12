@@ -150,6 +150,20 @@ static std::string unescape_str(const std::string& s)
 	return os.str();
 }
 
+object::base::mapped_type& object::operator[](const std::string& n)
+{
+	return base::operator[](n);
+}
+
+object::base::mapped_type object::operator[](const std::string& n) const
+{
+	auto it = base::find(n);
+	if (it == end())
+		return value();
+	return it->second;
+}
+
+
 void value::destroy()
 {
 	if (get_type() == str_type)
@@ -404,6 +418,23 @@ value& value::operator[](const std::string& name)
 }
 
 value& value::operator[](const char* name)
+{
+	return operator[](std::string(name));
+}
+
+value value::operator[](size_t i) const
+{
+	check_type(array_type);
+	return store_.v_array_->operator[](i);
+}
+
+value value::operator[](const std::string& name) const
+{
+	check_type(obj_type);
+	return store_.v_object_->operator[](name);
+}
+
+value value::operator[](const char* name) const
 {
 	return operator[](std::string(name));
 }

@@ -1,0 +1,5 @@
+{
+    "id" : 0,
+    "method" : "get_add_result",
+    "params" : [{"a": 1, "b": 2}]
+}
