@@ -130,14 +130,15 @@ public:
 		ret = get_int();
 	}
 
+
 	void set(const object& v) {
 		operator=(v);
 	}
 
 	template<typename T>
-	T get_value() const
+	typename std::decay<T>::type get_value() const
 	{
-		T ret{};
+		typename std::decay<T>::type ret{};
 		get<T>(ret);
 		return ret;
 	}

@@ -35,7 +35,7 @@ namespace rexjson {
 template<typename T>
 rexjson::value property_get(void* ctx)
 {
-	T ret = *static_cast<T*>(ctx); 
+	T ret = *static_cast<typename std::decay<T>::type*>(ctx); 
 	return rexjson::value(ret);
 }
 
@@ -45,7 +45,7 @@ rexjson::value property_get(void* ctx)
 template<typename T>
 void property_set(const rexjson::value& val, void* ctx)
 {
-	val.get(*static_cast<T*>(ctx));
+	val.get<typename std::decay<T>::type>(*static_cast<typename std::decay<T>::type*>(ctx));
 }
 
 class property;

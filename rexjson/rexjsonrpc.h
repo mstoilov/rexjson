@@ -100,7 +100,7 @@ struct rpc_wrapperbase
 	rexjson::value call(const rexjson::array& params, rpc_exec_mode mode)
 	{
 		auto is = std::index_sequence_for<Args...>();
-		std::tuple<Args...> tuple = params_to_tuple(params, is);
+		auto tuple = params_to_tuple(params, is);
 		return call_with_tuple(tuple, is);
 	}
 
@@ -116,10 +116,15 @@ protected:
 		return {{get_rpc_type(std::get<is>(tuple))...}};
 	}
 
+	/*
+	* Create a tuple and initialize it with the
+	* the values inside the array. The Args might contain
+	* references which will be converted to plain types.
+	*/
 	template<std::size_t... is>
-	std::tuple<Args...> params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
+	auto params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
 	{
-		return std::make_tuple(Args{params[is].get_value<Args>()}...);
+		return std::make_tuple(params[is].get_value<typename std::decay<Args>::type>()...);
 	}
 
 	template<std::size_t... is>
