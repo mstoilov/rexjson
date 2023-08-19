@@ -121,6 +121,12 @@ static constexpr unsigned int get_rpc_type()
 	return rexjson::obj_type;
 }
 
+template <typename I, std::enable_if_t<std::is_same<typename std::remove_cv<typename std::remove_reference<I>::type>::type, std::string>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
+{
+	return rexjson::str_type;
+}
+
 template<typename Ret, typename ...Args>
 struct rpc_wrapperbase
 {

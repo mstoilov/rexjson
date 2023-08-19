@@ -69,5 +69,6 @@
 		"variant": "cpp",
 		"vector": "cpp",
 		"algorithm": "cpp"
-	}
+	},
+	"cmake.configureOnOpen": false
 }

@@ -1,0 +1,5 @@
+{
+    "id" : 0,
+    "method" : "print_string",
+    "params" : ["12"]
+}

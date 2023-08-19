@@ -58,6 +58,10 @@ int get_add_result(const rexjson::object& v)
 	return v["a"].get_int() + v["b"].get_int();
 }
 
+void print_string(std::string str)
+{
+	std::cout << str << std::endl;
+}
 
 void register_rpc_methods(rpc_test_server& server)
 {
@@ -67,6 +71,8 @@ void register_rpc_methods(rpc_test_server& server)
 	server.add("get_echoadd_vector", rexjson::make_rpc_wrapper(get_echoadd_vector, "std::vector<int> get_echoadd_vector(const std::vector<int>& v, const int& add)"));
 	server.add("get_echoarrayadd_vector", rexjson::make_rpc_wrapper(get_echoarrayadd_vector, "std::vector<int> get_echoarrayadd_vector(const rexjson::array& v, const int& add)"));
 	server.add("get_add_result", rexjson::make_rpc_wrapper(get_add_result, "int get_add_result(rexjson::object& v)"));
+	server.add("print_string", rexjson::make_rpc_wrapper(print_string, "std::string print_string(std::string str)"));
+
 }
 
 int main(int argc, const char *argv[])
