@@ -35,6 +35,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <limits>
+#include <utility>
 #include "rexjson++.h"
 #include "rexjsondfa.h"
 
