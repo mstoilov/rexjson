@@ -63,6 +63,11 @@ void print_string(std::string str)
 	std::cout << str << std::endl;
 }
 
+rexjson::value str_to_value(const std::string& str)
+{
+	return rexjson::value(str);
+}
+
 void register_rpc_methods(rpc_test_server& server)
 {
 	server.add("get_sequence", rexjson::make_rpc_wrapper(get_sequence, "std::vector<int> get_sequence(size_t count)"));
@@ -72,6 +77,7 @@ void register_rpc_methods(rpc_test_server& server)
 	server.add("get_echoarrayadd_vector", rexjson::make_rpc_wrapper(get_echoarrayadd_vector, "std::vector<int> get_echoarrayadd_vector(const rexjson::array& v, const int& add)"));
 	server.add("get_add_result", rexjson::make_rpc_wrapper(get_add_result, "int get_add_result(rexjson::object& v)"));
 	server.add("print_string", rexjson::make_rpc_wrapper(print_string, "std::string print_string(std::string str)"));
+	server.add("str_to_value", rexjson::make_rpc_wrapper(str_to_value, "rexjson::value str_to_value(const std::string& str)"));
 
 }
 

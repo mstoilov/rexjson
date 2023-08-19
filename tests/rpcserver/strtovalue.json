@@ -1,0 +1,5 @@
+{
+    "id" : 0,
+    "method" : "str_to_value",
+    "params" : ["12"]
+}
