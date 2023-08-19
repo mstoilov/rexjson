@@ -137,7 +137,7 @@ public:
 	template<typename T>
 	T get_value() const
 	{
-		T ret;
+		T ret{};
 		get<T>(ret);
 		return ret;
 	}

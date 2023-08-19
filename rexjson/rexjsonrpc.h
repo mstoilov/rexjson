@@ -94,7 +94,7 @@ struct rpc_wrapperbase
 		: f_(f)
 		, help_msg_(help_msg)
 	{
-		json_types_ = make_types_array(std::tuple<Args...>(), std::index_sequence_for<Args...>());
+		json_types_ = make_types_array(std::make_tuple(Args{}...), std::index_sequence_for<Args...>());
 	}
 
 	rexjson::value call(const rexjson::array& params, rpc_exec_mode mode)
