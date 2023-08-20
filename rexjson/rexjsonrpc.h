@@ -78,6 +78,12 @@ enum rpc_exec_mode {
 	help,           // produce a help message
 };
 
+template <typename I, std::enable_if_t<std::is_same<typename std::remove_cv<typename std::remove_reference<I>::type>::type, rexjson::value>::value, bool> = true>
+static constexpr unsigned int get_rpc_type()
+{
+	return rexjson::null_type;
+}
+
 
 template <typename I, std::enable_if_t<std::is_same<typename std::remove_cv<typename std::remove_reference<I>::type>::type, bool>::value, bool> = true>
 static constexpr unsigned int get_rpc_type()
@@ -130,12 +136,12 @@ static constexpr unsigned int get_rpc_type()
 template<typename Ret, typename ...Args>
 struct rpc_wrapperbase
 {
-	using tuple_type = std::tuple<typename std::remove_cv<typename std::remove_reference<Args>::type>::type...>;
+	using tuple_type = std::tuple<typename std::decay<Args>::type...>;
 	rpc_wrapperbase(const std::function<Ret(Args...)>& f, std::string help_msg)
 		: f_(f)
 		, help_msg_(help_msg)
 	{
-		json_types_ = { get_rpc_type<typename std::remove_cv<typename std::remove_reference<Args>::type>::type>()... };
+		json_types_ = { get_rpc_type<typename std::decay<Args>::type>()... };
 	}
 
 	rexjson::value call(const rexjson::array& params, rpc_exec_mode mode)
@@ -151,10 +157,15 @@ struct rpc_wrapperbase
 	}
 
 protected:
+	/*
+	* Create a tuple and initialize it with the
+	* the values inside the array. The Args might contain
+	* references which will be converted to plain types.
+	*/
 	template<std::size_t... is>
-	tuple_type params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
+	auto params_to_tuple(const rexjson::array& params, std::index_sequence<is...>)
 	{
-		return std::make_tuple(static_cast<typename std::remove_cv<typename std::remove_reference<Args>::type>::type>(params[is])...);
+		return std::make_tuple(static_cast<typename std::decay<Args>::type>(params[is])...);
 	}
 
 	template<std::size_t... is>
