@@ -6,7 +6,7 @@ BIN_DIR = $(ROOT_DIR)/$(PROJECT_BIN_DIR)
 CFLAGS = -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-implicit-fallthrough
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-CXXFLAGS = -std=gnu++14
+CXXFLAGS = -std=gnu++17
 LDFLAGS = 
 INCLUDES = 
 LIBDIRS = -L$(BIN_DIR)

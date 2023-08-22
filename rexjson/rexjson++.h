@@ -152,62 +152,19 @@ public:
 
 	template<typename U>
 	struct converter;
-/**
-	template<>
-	struct converter<bool> {
-		static void get(bool& ret, const value& v) {
-			ret = v.get_bool();
-		}
-	};
-
-	template<>
-	struct converter<int64_t> {
-		static void get(int64_t& ret, const value& v) {
-			ret = v.get_int64();
-		}
-	};
-
-	template<>
-	struct converter<size_t> {
-		static void get(size_t& ret, const value& v) {
-			ret = v.get_int64();
-		}
-	};
-
-	template<>
-	struct converter<double> {
-		static void get(double& ret, const value& v) {
-			ret = v.get_real();
-		}
-	};
-
-	template<>
-	struct converter<float> {
-		static void get(float& ret, const value& v) {
-			ret = v.get_real();
-		}
-	};
-
-	template<>
-	struct converter<std::string> {
-		static void get(std::string& ret, const value& v) {
-			ret = v.get_str();
-		}
-	};
-*/
 
 	template<typename U>
 	struct converter {
 		static void get(U& ret, const value& v) {
-			if (std::is_same<typename std::remove_reference<typename std::remove_cv<U>::type>::type, bool>::value)
+			if constexpr (std::is_same<typename std::remove_reference<typename std::remove_cv<U>::type>::type, bool>::value)
 			{
 				ret = v.get_bool();
-			} else if (std::is_integral<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
+			} else if constexpr (std::is_integral<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
 				ret = v.get_int64();
-			} else if (std::is_floating_point<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
+			} else if constexpr (std::is_floating_point<typename std::remove_reference<typename std::remove_cv<U>::type>::type>::value) {
 				ret = v.get_real();
-			// } else if (std::is_same<typename std::remove_reference<typename std::remove_cv<U>::type>::type, std::string>::value) {
-			// 	ret = v.get_str();
+			} else if constexpr (std::is_same<typename std::remove_reference<typename std::remove_cv<U>::type>::type, std::string>::value) {
+				ret = v.get_str();
 			} else {
 				throw(std::runtime_error(std::string("Unsupported conversion from: ") + v.get_typename(v.get_type())));
 			}
