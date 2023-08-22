@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/unix/bin/rpcserver",
-            "args": ["${workspaceFolder}/tests/rpcserver/getechovector.json"],
+            "args": ["${workspaceFolder}/tests/rpcserver/setprop.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

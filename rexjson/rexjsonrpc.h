@@ -26,6 +26,7 @@
 #include <iostream>
 #include <functional>
 #include "rexjson/rexjson++.h"
+#include "rexjson/rexjsonproperty.h"
 
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
@@ -239,11 +240,13 @@ public:
 	using rpc_method_type = std::function<rexjson::value(rexjson::array& params, rpc_exec_mode mode)>;
 	typedef std::map<std::string, rpc_method_type> method_map_type;
 
-	rpc_server()
+	rpc_server() : propmap_(rexjson::property_map())
 	{
 		add("help", this, &rpc_server::rpc_help);
 		add("spec", &rpc_server::rpc_spec);
 		add("helpspec", &rpc_server::rpc_helpspec);
+		add("get", &rpc_server::rpc_get_property);
+		add("set", &rpc_server::rpc_set_property);
 	}
 
 	~rpc_server()
@@ -414,6 +417,11 @@ public:
 		return error;
 	}
 
+	void add_property(const std::string& name, const rexjson::property& propmap)
+	{
+		propmap_.insert(name, propmap);
+	}
+
 	void add(const std::string& name, const rpc_method_type& method)
 	{
 		if (name.empty())
@@ -546,6 +554,51 @@ public:
 		return ret;
 	}
 
+	rexjson::value rpc_get_property(rexjson::array& params, rexjson::rpc_exec_mode mode)
+	{
+		static std::string prefix = "";
+		std::ostringstream oss;
+		static unsigned int types[] = {rexjson::rpc_str_type};
+		static const char *help_msg = "Get property.\r\n\r\n";
+
+		if (mode != rexjson::execute) {
+			propmap_.enumerate(propmap_, prefix, [&](const std::string& path, rexjson::property& prop)->void
+					{
+						oss << path << " : " << prop.get().to_string() << "\r\n";
+					});
+			std::string help = help_msg;
+			help += oss.str();
+			return noexec(params, mode, types, ARRAYSIZE(types), help);
+		}
+		verify_parameters(params, types, ARRAYSIZE(types));
+		std::string path = params[0].get_str();
+		return propmap_.navigate(path.substr(prefix.size())).get();
+	}
+
+	rexjson::value rpc_set_property(rexjson::array& params, rexjson::rpc_exec_mode mode)
+	{
+		static std::string prefix = "";
+		std::ostringstream oss;
+		static unsigned int types[] = {rexjson::rpc_str_type, rexjson::rpc_str_type|rexjson::rpc_int_type|rexjson::rpc_real_type|rexjson::rpc_bool_type};
+		static const char *help_msg = "Set property.\r\n";
+
+		if (mode != rexjson::execute) {
+			propmap_.enumerate(propmap_, prefix, [&](const std::string& path, rexjson::property& prop)->void
+					{
+						oss << path << " : " << prop.get().to_string() << "\r\n";
+					});
+			std::string help = help_msg;
+			help += oss.str();
+			return noexec(params, mode, types, ARRAYSIZE(types), help);
+		}
+		verify_parameters(params, types, ARRAYSIZE(types));
+		std::string path = params[0].get_str();
+		propmap_.navigate(path.substr(prefix.size())).set(params[1]);
+		return propmap_.navigate(path.substr(prefix.size())).get();
+	}
+
+
+
 protected:
 	static void convert_types_to_strings(rexjson::value& val)
 	{
@@ -572,6 +625,7 @@ protected:
 
 protected:
 	method_map_type map_;
+	rexjson::property propmap_;
 };
 
 } /* namespace rexjson */

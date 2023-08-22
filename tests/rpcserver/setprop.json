@@ -1,0 +1,4 @@
+{
+	"method":"set", 
+	"params" : ["joe.name", "joejoe"]
+}
